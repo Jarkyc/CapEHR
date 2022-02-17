@@ -42,8 +42,7 @@ def transcribe_file(speech_file):
     # them to get the transcripts for the entire audio file.
     for result in response.results:
         # The first alternative is the most likely one for this portion.
-        print(u"Transcript: {}".format(result.alternatives[0].transcript))
-        print("Confidence: {}".format(result.alternatives[0].confidence))
+        return(result.alternatives[0].transcript)
     # [END speech_python_migration_async_response]
 
 
