@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/EHRClient.iml" filepath="$PROJECT_DIR$/.idea/EHRClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../EHR Server/.idea/pythonProject.iml" filepath="$PROJECT_DIR$/../EHR Server/.idea/pythonProject.iml" />
     </modules>
   </component>
 </project>
