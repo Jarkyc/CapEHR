@@ -1,11 +1,21 @@
 from google.cloud import speech
 import pyaudio
 import wave
+import threading
+import main as home
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
+
+st = 0
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
 
 def transcribe_file(speech_file):
     """Transcribe the given audio file asynchronously."""
@@ -62,12 +72,12 @@ def record_audio():
 
     frames = []
 
+    global st
+    st = 1
     try:
-        while True:
+        while st == 1:
             data = stream.read(CHUNK)
             frames.append(data)
-    except KeyboardInterrupt:
-        print("Done Recording")
     except Exception as e:
         print(str(e))
 
@@ -80,7 +90,9 @@ def record_audio():
     return sample_width, frames
 
 
-def record_to_file(file_path):
+def record_to_file():
+    print("running")
+    file_path="audio.wav"
     wf = wave.open(file_path, 'wb')
     wf.setnchannels(CHANNELS)
     sample_width, frames = record_audio()
@@ -88,3 +100,15 @@ def record_to_file(file_path):
     wf.setframerate(RATE)
     wf.writeframes(b''.join(frames))
     wf.close()
+    home.make_request()
+
+
+def stop_recording():
+    global st
+    st = 0
+
+
+def start_recording():
+    x = threading.Thread(target=record_to_file)
+    x.start()
+

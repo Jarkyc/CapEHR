@@ -29,6 +29,7 @@ def server_wait():
     print(parcel["content"])
     print("connection terminated")
 
+
 server_wait()
 
 
