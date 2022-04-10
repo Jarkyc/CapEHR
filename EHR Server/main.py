@@ -7,16 +7,22 @@ import socket
 import pickle
 import word_analysis
 
+s = None
+
 def server_wait():
 
     HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
     PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
 
+    global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
     s.listen(5)
     print("Waiting for connection")
+    listen()
 
+
+def listen():
     conn, addr = s.accept()
     print(f"Establishing connection with: {addr}")
     full_msg = b''
@@ -31,7 +37,7 @@ def server_wait():
     print(string)
     word_analysis.analyze_command(string)
     print("connection terminated")
-
+    listen()
 
 server_wait()
 
