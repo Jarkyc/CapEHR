@@ -5,6 +5,7 @@
 
 import socket
 import pickle
+import word_analysis
 
 def server_wait():
 
@@ -26,7 +27,9 @@ def server_wait():
         full_msg += msg
 
     parcel = pickle.loads(full_msg)
-    print(parcel["content"])
+    string = parcel["content"]
+    print(string)
+    word_analysis.analyze_command(string)
     print("connection terminated")
 
 
