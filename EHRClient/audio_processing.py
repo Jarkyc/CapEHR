@@ -100,7 +100,7 @@ def record_to_file():
     wf.setframerate(RATE)
     wf.writeframes(b''.join(frames))
     wf.close()
-    home.make_request()
+    home.make_request("AUDIO", None)
 
 
 def stop_recording():

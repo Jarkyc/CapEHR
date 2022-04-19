@@ -1,22 +1,26 @@
 
-#Find a good universal structure for the response packet and send it to the client.
 #Make the database request ON the server, and send only the data to the client, not the parsed request itself
-#Dont close server after request
 
 import socket
 import pickle
 import word_analysis
+import mysql.connector
 
 s = None
 
-def server_wait():
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="root",
+    database="test_db"
+)
 
-    HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-    PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
+
+def open_socket():
 
     global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
+    s.bind(('127.0.0.1', 8080))
     s.listen(5)
     print("Waiting for connection")
     listen()
@@ -28,17 +32,42 @@ def listen():
     full_msg = b''
     while True:
         msg = conn.recv(8)
-        if len(msg) <= 0:
+        if msg.endswith(b'~'):
+            msg.replace(b'~', b'')
+            full_msg += msg
+            break
+        if not msg:
             break
         full_msg += msg
 
+
     parcel = pickle.loads(full_msg)
-    string = parcel["content"]
-    print(string)
-    word_analysis.analyze_command(string)
-    print("connection terminated")
+    type = parcel["type"]
+    if type == "LOGIN":
+        userLine = parcel["content"]
+        userLs = userLine.split(" ")
+        username = userLs[0]
+        password = userLs[1]
+
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM loginusers WHERE username = \'" + username + "\' AND password = \'" + password + "\'")
+
+        rows = cursor.fetchall()
+        if(len(rows) == 0):
+            conn.send((b'FALSE'))
+            conn.close()
+        else:
+            conn.send((b'TRUE'))
+            conn.close()
+
+    elif type == "AUDIO":
+        string = parcel["content"]
+        print(string)
+        word_analysis.analyze_command(string)
+        print("connection terminated")
+
     listen()
 
-server_wait()
+open_socket()
 
 

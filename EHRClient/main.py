@@ -3,26 +3,32 @@ import audio_processing
 import pickle
 import window_writing
 
+def make_request(type, cont):
+    # create interface code.
+    # create a temporary socket connection with the server. recieve in a universal packet.
+    try:
+        content = None
+        if type == "AUDIO":
+            content = audio_processing.transcribe_file("audio.wav")
+        elif type == "LOGIN":
+            content = cont
 
+        parcel = {
+            "type": type,
+            "senderAccount": "",
+            "content": content,
+        }
 
-def make_request():
-    # create interface code. Look up the basics for application processes and making sure the application loop doesnt close.
-    # create a temporary socket connection with the server. recieve in a universal packet. Find way to make sure application does not close after packet is received.
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('127.0.0.1', 8080))
 
-    parcel = {
-        "senderAccount": "",
-        "content": audio_processing.transcribe_file("audio.wav"),
-    }
-
-    HOST = '127.0.0.1'  # The server's hostname or IP address
-    PORT = 65432  # The port used by the server
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((HOST, PORT))
-
-    while True:
-        s.send(pickle.dumps(parcel))
+        s.send(pickle.dumps(parcel) + b'~')
+        full_msg = s.recv(1024)
         s.close()
+
+        return full_msg.decode()
+    except (ConnectionRefusedError, ConnectionResetError):
+        window_writing.error_window("SERVER")
 
 
 def main():
