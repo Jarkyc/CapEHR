@@ -1,10 +1,10 @@
-
-#Make the database request ON the server, and send only the data to the client, not the parsed request itself
+# Make the database request ON the server, and send only the data to the client, not the parsed request itself
 
 import socket
 import pickle
 import word_analysis
 import mysql.connector
+import database_funcs
 
 s = None
 
@@ -17,7 +17,6 @@ db = mysql.connector.connect(
 
 
 def open_socket():
-
     global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(('127.0.0.1', 8080))
@@ -40,7 +39,6 @@ def listen():
             break
         full_msg += msg
 
-
     parcel = pickle.loads(full_msg)
     type = parcel["type"]
     if type == "LOGIN":
@@ -50,10 +48,11 @@ def listen():
         password = userLs[1]
 
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM loginusers WHERE username = \'" + username + "\' AND password = \'" + password + "\'")
+        cursor.execute(
+            "SELECT * FROM loginusers WHERE username = \'" + username + "\' AND password = \'" + password + "\'")
 
         rows = cursor.fetchall()
-        if(len(rows) == 0):
+        if (len(rows) == 0):
             conn.send((b'FALSE'))
             conn.close()
         else:
@@ -68,6 +67,6 @@ def listen():
 
     listen()
 
-open_socket()
 
-
+# open_socket()
+database_funcs.create_procedure("789", "987", "This is a test procedure")
